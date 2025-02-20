@@ -56,27 +56,27 @@ def handle_path_choice(player_health):
 
 def player_attack(monster_health, player_stats):
     """this should update the current health of the monster, and it will simulat player's attack"""
-    monster_health -= 15
+    monster_health -= player_stats["attack"]
     print("You strike the monster for 15 damage!")
-    return monster_health
+    return monster_health, player_stats
 
-def monster_attack(player_health, player_stats):
+def monster_attack(player_stats):
     """update the player health after monster has striken and return back the player health"""
     critical_hit = random.random()
     if critical_hit < 0.5:
-        player_health -= 20
+        player_stats["health"] -= 20
         print("The monster lands a critical hit for 20 damage!")
     else:
-        player_health -= 10
+        player_stats["health"] -= 10
         print("The monster hits you for 10 damage!")
-    return player_health
+    return player_stats
 
 def combat_encounter(monster_health, has_treasure, player_stats):
     """there is a combat encounter that has attacks/change the health monster & player in loop"""
     player_stats['health']
     player_stats['attack']
     while player_stats["health"] > 0 and monster_health > 0:
-display_player_status(player_stats["health"])
+    display_player_status(player_stats["health"])
         monster_health = player_attack(monster_health)
         if monster_health <= 0:
             print("You defeated the monster!")
