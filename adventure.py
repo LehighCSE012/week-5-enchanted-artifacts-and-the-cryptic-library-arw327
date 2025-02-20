@@ -95,7 +95,7 @@ def check_for_treasure(has_treasure):
     else:
         print("The monster did not have the treasure. You continue your journey.")
 
-def handle_challenge(challenge_type, current_inventory, challenge_outcome, player_stats):
+def handle_challenge(challenge_type, current_inventory, challenge_outcome, player_stats, can_bypass_puzzle):
     """this code split up the enter dungeon region so less if with puzzle and trap"""
     if current_inventory is None:
         current_inventory = []
@@ -130,7 +130,7 @@ def handle_challenge(challenge_type, current_inventory, challenge_outcome, playe
         success = random.choice([True, False])
         if success:
             print(challenge_outcome[0])
-            player_health += challenge_outcome[2]
+            player_health['health'] += challenge_outcome[2]
             if player_stats['health'] < 0:
                 player_stats['health'] = 0
                 print("You are barely alive!")
@@ -151,7 +151,7 @@ def find_clue(clues, new_clue):
         print("You already know this clue.")
     return clues
 
-def enter_dungeon(player_stats, current_inventory, dungeon_rooms, clues):
+def enter_dungeon(player_stats, current_inventory, dungeon_rooms, clues, can_bypass_puzzle):
     """this is for the player to enter the dungeon and start the items"""
 
     for room in dungeon_rooms:
@@ -191,6 +191,7 @@ def main():
     clues = set()
     has_treasure = random.choice([True, False])
     player_stats = handle_path_choice(player_stats)
+    can_bypass_puzzle = False
 
     combat_result, has_treasure = combat_encounter(
         player_stats,
