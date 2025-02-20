@@ -2,17 +2,19 @@
 import random
 
 inventory = []
+              
 def discover_artifact(player_stats, artifacts, artifact_name):
-    if artifacts.get(artifact_name):
-        print(f"you found the {artifact_name}!")
-        artifacts = artifacts.pop(artifact_name)
+    artifact = artifacts.get(artifact_name)
+    if artifact:
+        print(f"You found the {artifact_name}!")
+        print(artifact["description"])
 
-    if artifacts['effect'] == "increases health":
-        player_stats['health'] = min(player_stats['health'] + artifacts['power'],100)
-        print("Your health increases!")
-    elif artifacts['effect'] == "enhances attack":
-        player_stats['attack'] += artifacts['power']
-        print("Your attack enhances!")
+        if artifact['effect'] == "increases health":
+            player_stats['health'] = min(player_stats['health'] + artifact['power'],100)
+            print("Your health increases!")
+        elif artifact['effect'] == "enhances attack":
+            player_stats['attack'] += artifact['power']
+            print("Your attack enhances!")
 
     else:
         print("You found nothing of interest.")
@@ -57,7 +59,7 @@ def handle_path_choice(player_health):
 def player_attack(monster_health, player_stats):
     """this should update the current health of the monster, and it will simulat player's attack"""
     monster_health -= player_stats["attack"]
-    print("You strike the monster for 15 damage!")
+    print(f"You strike the monster for {player_stats['attack']} damage!")
     return monster_health, player_stats
 
 def monster_attack(player_stats):
@@ -73,19 +75,17 @@ def monster_attack(player_stats):
 
 def combat_encounter(monster_health, has_treasure, player_stats):
     """there is a combat encounter that has attacks/change the health monster & player in loop"""
-    player_stats['health']
-    player_stats['attack']
     while player_stats["health"] > 0 and monster_health > 0:
-    display_player_status(player_stats["health"])
-        monster_health = player_attack(monster_health)
+        display_player_status(player_stats["health"])
+        monster_health = player_attack(monster_health, player_stats)
         if monster_health <= 0:
             print("You defeated the monster!")
             return True, has_treasure
-        player_stats = monster_attack(player_stats["health"])
+        player_stats = monster_attack(player_stats)
         if player_stats["health"] <= 0:
             print("Game Over!")
             return False, has_treasure
-    return False
+    return False, player_stats
 
 def check_for_treasure(has_treasure):
     """this code will check if the monster will have treasure, then tell the user through a bool"""
@@ -142,8 +142,16 @@ def handle_challenge(challenge_type, current_inventory, challenge_outcome, playe
     display_inventory(current_inventory)
     return player_health, current_inventory
 
-def enter_dungeon(player_health, current_inventory, dungeon_rooms):
+def enter_dungeon(player_health, current_inventory, dungeon_rooms, clues):
     """this is for the player to enter the dungeon and start the items"""
+    def find_clue(clues, new_clue):
+        if new_clue not in clues:
+            clues.add(new_clue)
+            print(f"You discovered a new clue: {new_clue}")
+        else:
+            print("You already know this clue.")
+    return clues
+
     for room in dungeon_rooms:
         room_description = room[0]
         item = room[1]
@@ -163,14 +171,20 @@ def enter_dungeon(player_health, current_inventory, dungeon_rooms):
             display_inventory(current_inventory)
         else:
             print("There doesn't seem to be a challenge in this room. You move on.")
-    return player_health, current_inventory
+        elif challenge_type == "library":
+            print(room_description)
+            possible_clues = []
+            selected_clues = random.sample(possible_clues, 2)
+            for clues in selected_clues:
+                clues = find_clue(clues, clue)
+    return player_health, current_inventory, clues
 
 def main():
     """this code will initialize and set values to variables"""
     player_health_initial = 100
     monster_health_initial = 70
     has_treasure = False
-
+clues = set()
     has_treasure = random.choice([True, False])
     player_health_initial = handle_path_choice(player_health_initial)
 
@@ -219,7 +233,8 @@ def main():
         artifact_name = random.choice(list(artifacts.keys()))
         if artifact_name:
             player_stats, artifacts = discover_artifact(player_stats, artifacts, artifact_name)
-            print(player_stats)
+            print(f"Your current health is: {player_stats['health']}")
+            print(f"Your current attack is: {player_stats['attack']}")
     else:
         print("No artifact was found at this time.")
 
@@ -237,13 +252,19 @@ def main():
         "none",
         None
     ))
-#tuples, immutable, cannot be changed outside-if i did an append. for a dungeon
+    dungeon_rooms.append((
+        "The Cryptic Library",
+        None,
+        "library",
+        None
+    ))
+
     current_inventory = []
     if player_health_initial > 0:
         player_health_initial, current_inventory = enter_dungeon(
             player_health_initial,
             current_inventory,
-            dungeon_rooms
+            dungeon_rooms, clues
         )
 
 if __name__ == "__main__":
