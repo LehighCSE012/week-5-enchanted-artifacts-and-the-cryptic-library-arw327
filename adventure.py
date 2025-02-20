@@ -54,13 +54,13 @@ def handle_path_choice(player_health):
             print("You are barely alive!")
     return player_health
 
-def player_attack(monster_health):
+def player_attack(monster_health, player_stats):
     """this should update the current health of the monster, and it will simulat player's attack"""
     monster_health -= 15
     print("You strike the monster for 15 damage!")
     return monster_health
 
-def monster_attack(player_health):
+def monster_attack(player_health, player_stats):
     """update the player health after monster has striken and return back the player health"""
     critical_hit = random.random()
     if critical_hit < 0.5:
@@ -71,18 +71,20 @@ def monster_attack(player_health):
         print("The monster hits you for 10 damage!")
     return player_health
 
-def combat_encounter(player_health, monster_health, has_treasure):
+def combat_encounter(monster_health, has_treasure, player_stats):
     """there is a combat encounter that has attacks/change the health monster & player in loop"""
-    while player_health > 0 and monster_health > 0:
-        display_player_status(player_health)
+    player_stats['health']
+    player_stats['attack']
+    while player_stats["health"] > 0 and monster_health > 0:
+display_player_status(player_stats["health"])
         monster_health = player_attack(monster_health)
         if monster_health <= 0:
             print("You defeated the monster!")
-            return has_treasure
-        player_health = monster_attack(player_health)
-        if player_health <= 0:
+            return True, has_treasure
+        player_stats = monster_attack(player_stats["health"])
+        if player_stats["health"] <= 0:
             print("Game Over!")
-            return False
+            return False, has_treasure
     return False
 
 def check_for_treasure(has_treasure):
