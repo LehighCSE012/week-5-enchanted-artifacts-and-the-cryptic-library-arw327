@@ -142,15 +142,16 @@ def handle_challenge(challenge_type, current_inventory, challenge_outcome, playe
     display_inventory(current_inventory)
     return player_health, current_inventory
 
+def find_clue(clues, new_clue):
+    if new_clue not in clues:
+        clues.add(new_clue)
+        print(f"You discovered a new clue: {new_clue}")
+    else:
+        print("You already know this clue.")
+    return clues
+
 def enter_dungeon(player_health, current_inventory, dungeon_rooms, clues):
     """this is for the player to enter the dungeon and start the items"""
-    def find_clue(clues, new_clue):
-        if new_clue not in clues:
-            clues.add(new_clue)
-            print(f"You discovered a new clue: {new_clue}")
-        else:
-            print("You already know this clue.")
-    return clues
 
     for room in dungeon_rooms:
         room_description = room[0]
@@ -172,11 +173,13 @@ def enter_dungeon(player_health, current_inventory, dungeon_rooms, clues):
         else:
             print("There doesn't seem to be a challenge in this room. You move on.")
         elif challenge_type == "library":
-            print(room_description)
-            possible_clues = []
+            possible_clues = ["The treasure is hidden where the dragon sleeps.", "The key lies with the gnome.", "Beware the shadows.", "The amulet unlocks the final door."]
             selected_clues = random.sample(possible_clues, 2)
-            for clues in selected_clues:
+            for clue in selected_clues:
                 clues = find_clue(clues, clue)
+            if "staff_of_wisdom" in current_inventory:
+                print("The Staff of Wisdom hums with power, you understand the true meaning of the clues.")
+                print("You can now bypass a puzzle challenge of your choice.")
     return player_health, current_inventory, clues
 
 def main():
@@ -184,7 +187,7 @@ def main():
     player_health_initial = 100
     monster_health_initial = 70
     has_treasure = False
-clues = set()
+    clues = set()
     has_treasure = random.choice([True, False])
     player_health_initial = handle_path_choice(player_health_initial)
 
@@ -208,21 +211,21 @@ clues = set()
     ))
     player_stats = {'health': 100, 'attack': 5}
     artifacts = {
-        "amulet_of_liveliness": {
+        "amulet_of_vitality": {
     """This will also increase healh by 15"""
             "description": "A glowing amulet that enhances your life force.",
             "power": 15,
             "effect": "increases health"
         },
-        "bracelet_of_power": {
+        "ring_of_strength": {
     """This will boost attack damage by 10"""
-            "description": "A powerful bracelet that boosts your attack damage.",
+            "description": "A powerful ring that boosts your attack damage.",
             "power": 10,
             "effect": "enhances attack"
         },
-        "sword_of_truth": {
+        "staff_of_wisdom": {
     """this will solve puzzles and add power by 5"""
-            "description": "A sword imbued with ancient truth.",
+            "description": "A sword imbued with ancient wisdom.",
             "power": 5,
             "effect": "solves puzzles"
         }
@@ -253,7 +256,7 @@ clues = set()
         None
     ))
     dungeon_rooms.append((
-        "The Cryptic Library",
+        "A vast library filled with ancient, cryptic texts.",
         None,
         "library",
         None
