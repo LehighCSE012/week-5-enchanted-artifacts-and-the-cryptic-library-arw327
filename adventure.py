@@ -2,6 +2,22 @@
 import random
 
 inventory = []
+def discover_artifact(player_stats, artifacts, artifact_name):
+    if artifacts.get(artifact_name):
+        print(f"you found the {artifact_name}!")
+        artifacts = artifacts.pop(artifact_name)
+
+    if artifacts['effect'] == "increases health":
+        player_stats['health'] = min(player_stats['health'] + artifacts['power'],100)
+        print("Your health increases!")
+    elif artifacts['effect'] == "enhances attack":
+        player_stats['attack'] += artifacts['power']
+        print("Your attack enhances!")
+
+    else:
+        print("You found nothing of interest.")
+
+    return player_stats, artifacts #return updated dictionaries
 
 def acquire_item(current_inventory, item):
     """this will aquire item for the inventory"""
@@ -174,6 +190,37 @@ def main():
          "You triggered the trap!",
          -15)
     ))
+    player_stats = {'health': 100, 'attack': 5}
+    artifacts = {
+        "amulet_of_liveliness": {
+    """This will also increase healh by 15"""
+            "description": "A glowing amulet that enhances your life force.",
+            "power": 15,
+            "effect": "increases health"
+        },
+        "bracelet_of_power": {
+    """This will boost attack damage by 10"""
+            "description": "A powerful bracelet that boosts your attack damage.",
+            "power": 10,
+            "effect": "enhances attack"
+        },
+        "sword_of_truth": {
+    """this will solve puzzles and add power by 5"""
+            "description": "A sword imbued with ancient truth.",
+            "power": 5,
+            "effect": "solves puzzles"
+        }
+    }
+    artifact_name = None
+
+    if random.random() < 0.3:
+        artifact_name = random.choice(list(artifacts.keys()))
+        if artifact_name:
+            player_stats, artifacts = discover_artifact(player_stats, artifacts, artifact_name)
+            print(player_stats)
+    else:
+        print("No artifact was found at this time.")
+
     dungeon_rooms.append((
         "Caves with crystals",
         "Crystal Ball",
@@ -197,34 +244,5 @@ def main():
             dungeon_rooms
         )
 
-    artifacts = {
-        "amulet_of_liveliness": {
-    """This will also increase healh by 15"""
-            "description": "A glowing amulet that enhances your life force.",
-            "power": 15,
-            "effect": "increases health"
-        },
-        "bracelet_of_power": {
-    """This will boost attack damage by 10"""
-            "description": "A powerful bracelet that boosts your attack damage.",
-            "power": 10,
-            "effect": "enhances attack"
-        },
-        "sword_of_truth": {
-    """this will solve puzzles and add power by 5"""
-            "description": "A sword imbued with ancient truth.",
-            "power": 5,
-            "effect": "solves puzzles"
-        }
-    }
-    def discover_artifact(player_stats, artifacts, artifact_name):
-        player_stats = {'health': 100, 'attack': 5}
-        artifacts = {'amulet_of_liveliness': {"description": "A glowing amulet that enhances your life force.",
-                     "power": 15,
-                     "effect": "increases health"}, 'bracelet_of_power':{"description": "A powerful bracelet that boosts your attack damage.", "power": 10, "effect": "enhances attack"}, 'sword_of_truth': { "description": "A sword imbued with ancient truth.", "power": 5, "effect": "solves puzzles"}} 
-        artifact_name = "amulet_of_liveliness, bracelet_of_power, sword_of_truth"
-    if artifact_name in artifacts:
-        print(f"you found the {artifact_name}")
-        
 if __name__ == "__main__":
     main()
